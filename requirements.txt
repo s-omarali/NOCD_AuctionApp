@@ -1,6 +1,10 @@
- flask 
- flask-sqlalchemy 
- flask-cors 
- boto3 
- python-dotenv 
- requests
+flask
+flask-sqlalchemy
+flask-cors
+boto3
+python-dotenv
+requests
+flask-migrate
+flask-wtf
+gunicorn
+psycopg2-binary
