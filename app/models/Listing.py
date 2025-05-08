@@ -1,4 +1,5 @@
 from routes.db import get_db_connection
+from datetime import datetime, timedelta
 
 class Listing:
     
@@ -7,7 +8,7 @@ class Listing:
         self.title = title
         self.description = description
         self.starting_price = starting_price
-        self.end_time = end_time
+        self.end_time = end_time if end_time else datetime.now() + timedelta(days=7)  # 7 day listing period for now
         self.image_url = image_url
         self.lister_id = lister_id
         self.id = id
