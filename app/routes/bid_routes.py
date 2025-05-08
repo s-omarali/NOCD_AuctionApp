@@ -5,6 +5,7 @@ from models.Listing import Listing
 from datetime import datetime
 from send_noti import send_sms
 from routes.db import get_db_connection
+from decimal import Decimal, InvalidOperation
 
 
 bid_bp = Blueprint('bids', __name__)
@@ -30,27 +31,41 @@ def place_bid():
     if datetime.now() > listing.end_time:
         return jsonify({"error": "Listing has ended"}), 400
 
-    # Validate bid amount
+    # Safely parse bid amount using Decimal
+    try:
+        bid_amount = Decimal(data['amount'])
+    except (InvalidOperation, KeyError):
+        return jsonify({"error": "Invalid bid amount"}), 400
+
+    # Validate bid amount against current highest bid
     highest_bid = Bid.get_highest_bid(data['listing_id'])
-    if highest_bid and data['amount'] <= highest_bid.amount:
+    if highest_bid and bid_amount <= highest_bid.amount:
         return jsonify({"error": "Bid amount must be higher than the current highest bid"}), 400
-    
-     # Notify the previous highest bidder (if any)
+
+    # Notify the previous highest bidder (if any)
     if highest_bid:
-        previous_bidder_phone = get_user_phone(highest_bid.bidder_id)  # Replace with actual logic to get phone number
+        previous_bidder_phone = get_user_phone(highest_bid.bidder_id)
         if previous_bidder_phone:
             send_sms(previous_bidder_phone, f"You have been outbid on listing '{listing.title}'.")
 
     # Save the bid
-    bid = Bid(**data)
+    bid = Bid(
+        listing_id=data['listing_id'],
+        bidder_id=data['bidder_id'],
+        amount=bid_amount
+    )
     bid.save()
-    
 
-    # To notify the lister
-    lister_phone = get_user_phone(listing.lister_id)  # Replace with actual logic to get phone number
+    # Notify the lister
+    lister_phone = get_user_phone(listing.lister_id)
     if lister_phone:
-        send_sms(lister_phone, f"A new bid of ${data['amount']} has been placed on your listing '{listing.title}'.")
-    return jsonify(bid.to_dict()), 201
+        send_sms(lister_phone, f"A new bid of ${bid_amount} has been placed on your listing '{listing.title}'.")
+    
+    
+    return jsonify({
+    "message": "Bid placed successfully",
+    "bid": bid.to_dict()
+    }), 201
 
 @bid_bp.route('/bids/<int:listing_id>', methods=['GET'])
 def get_bids(listing_id):
