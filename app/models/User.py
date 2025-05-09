@@ -11,10 +11,10 @@ class User:
         conn = get_db_connection()
         with conn.cursor() as cursor:
             sql = """
-                INSERT INTO users (username, email)
+                INSERT INTO users (username, password)
                 VALUES (%s, %s)
             """
-            cursor.execute(sql, (self.username, self.email))
+            cursor.execute(sql, (self.username, self.password))
             conn.commit()
             self.id = cursor.lastrowid
         conn.close()
