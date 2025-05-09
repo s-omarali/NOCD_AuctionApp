@@ -1,10 +1,11 @@
-from db import get_db_connection
+from routes.db import get_db_connection
 
 class User:
-    def __init__(self, username, phone_number, id=None):
+    def __init__(self, username, phone_number,password, id=None):
         self.id = id
         self.username = username
         self.phone_number = phone_number
+        self.password = password
 
     def save(self):
         conn = get_db_connection()
@@ -35,6 +36,21 @@ class User:
             row = cursor.fetchone()
         conn.close()
         return row['phone_number'] if row else None
+    
+    @staticmethod
+    def get_by_username(username):
+        conn = get_db_connection()
+        with conn.cursor() as cursor:
+            cursor.execute("SELECT * from users WHERE username = %s", (username,))
+            row = cursor.fetchone()
+
+        conn.close()
+        return User(**row) if row else None # get matching user else none 
 
     def to_dict(self):
-        return self.__dict__
+        return {
+            "id": self.id,
+            "username": self.username,
+            "phone_number": self.phone_number # not including password in return
+            
+        }
