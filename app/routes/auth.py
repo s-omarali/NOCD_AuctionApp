@@ -28,15 +28,15 @@ def register():
 
     return jsonify({"message": "User registered successfully", "user_id": new_user.id}), 201
 
-@auth_bp.route("/login",methods=["POST"])
+@auth_bp.route("/login", methods=["POST"])
 def login():
     data = request.get_json()
     username = data.get("username")
     password = data.get("password")
 
     user = User.get_by_username(username)
-    if not user or user.password!= password:
-        return jsonify({"error":" Incorrect password or invalid username "}), 401
-    
+    if not user or not checkpw(password.encode('utf-8'), user.password.encode('utf-8')):
+        return jsonify({"error": "Incorrect password or invalid username"}), 401
+
     access_token = create_access_token(identity=user.id)
     return jsonify({"access_token": access_token}), 200
