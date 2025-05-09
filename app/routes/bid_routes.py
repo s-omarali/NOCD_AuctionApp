@@ -18,7 +18,7 @@ def get_user_phone(user_id):
     conn.close()
     return row['phonenumber'] if row else None
 
-@bid_bp.route('/bids', methods=['POST'])
+@bid_bp.route('/', methods=['POST'])
 def place_bid():
     data = request.get_json()
 
@@ -67,7 +67,7 @@ def place_bid():
     "bid": bid.to_dict()
     }), 201
 
-@bid_bp.route('/bids/<int:listing_id>', methods=['GET'])
+@bid_bp.route('/<int:listing_id>', methods=['GET'])
 def get_bids(listing_id):
     bids = Bid.get_for_listing(listing_id)
     return jsonify([b.to_dict() for b in bids]), 200
