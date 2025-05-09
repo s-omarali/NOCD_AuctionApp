@@ -22,22 +22,22 @@ def get_user_phone(user_id):
 def place_bid():
     data = request.get_json()
 
-    # Validate listing existence
+    
     listing = Listing.get_by_id(data['listing_id'])
     if not listing:
         return jsonify({"error": "Listing not found"}), 404
 
-    # Validate listing is still active
+    
     if datetime.now() > listing.end_time:
         return jsonify({"error": "Listing has ended"}), 400
 
-    # Safely parse bid amount using Decimal
+    
     try:
         bid_amount = Decimal(data['amount'])
     except (InvalidOperation, KeyError):
         return jsonify({"error": "Invalid bid amount"}), 400
 
-    # Validate bid amount against current highest bid
+    
     highest_bid = Bid.get_highest_bid(data['listing_id'])
     if highest_bid and bid_amount <= highest_bid.amount:
         return jsonify({"error": "Bid amount must be higher than the current highest bid"}), 400

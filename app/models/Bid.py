@@ -17,6 +17,15 @@ class Bid:
             cursor.execute(sql, (self.listing_id, self.amount, self.bidder_id))
             conn.commit()
             self.id = cursor.lastrowid
+
+            # code to update highest bid value in listings
+            update_sql = """
+            UPDATE listings
+            SET highest_bid = GREATEST(highest_bid, %s)
+            WHERE id = %s
+        """
+            cursor.execute(update_sql, (self.amount, self.listing_id))
+            conn.commit()
         conn.close()
 
     def to_dict(self):
