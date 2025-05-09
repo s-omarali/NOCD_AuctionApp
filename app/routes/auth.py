@@ -36,7 +36,7 @@ def login():
 
     user = User.get_by_username(username)
     if not user or user.password!= password:
-        return jsonify({"error: Incorrect password or invalid username "}), 401
+        return jsonify({"error":" Incorrect password or invalid username "}), 401
     
     access_token = create_access_token(identity=user.id)
     return jsonify({"access_token": access_token}), 200
