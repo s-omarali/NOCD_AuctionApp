@@ -13,10 +13,10 @@ bid_bp = Blueprint('bids', __name__)
 def get_user_phone(user_id):
     conn = get_db_connection()
     with conn.cursor() as cursor:
-        cursor.execute("SELECT phonenumber FROM users WHERE id = %s", (user_id,))
+        cursor.execute("SELECT phone_number FROM users WHERE id = %s", (user_id,))
         row = cursor.fetchone()
     conn.close()
-    return row['phonenumber'] if row else None
+    return row['phone_number'] if row else None
 
 @bid_bp.route('/', methods=['POST'])
 def place_bid():
