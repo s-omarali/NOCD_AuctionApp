@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 class Listing:
     
 
-    def __init__(self, title, description, starting_price, end_time, image_url=None,lister_id=None,id=None):
+    def __init__(self, title, description, starting_price, end_time, image_url=None,lister_id=None,id=None,highest_bid=0):
         self.title = title
         self.description = description
         self.starting_price = starting_price
@@ -12,6 +12,7 @@ class Listing:
         self.image_url = image_url
         self.lister_id = lister_id
         self.id = id
+        self.highest_bid = highest_bid
 
     def save(self):
         conn = get_db_connection()
