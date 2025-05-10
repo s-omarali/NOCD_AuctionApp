@@ -8,6 +8,7 @@ from models.Listing import Listing
 
 listing_bp = Blueprint('listings', __name__)
 
+# POST AND GET from same route
 
 @listing_bp.route('/', methods=['POST'])
 def create_listing():

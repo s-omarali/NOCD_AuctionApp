@@ -42,13 +42,13 @@ def place_bid():
     if highest_bid and bid_amount <= highest_bid.amount:
         return jsonify({"error": "Bid amount must be higher than the current highest bid"}), 400
 
-    # Notify the previous highest bidder (if any)
+    # Phone number alert logic: NOT IMPLEMENTED CORRECTLY YET NEED TO CHANGE EC2 SETTINGS
     if highest_bid:
         previous_bidder_phone = get_user_phone(highest_bid.bidder_id)
         if previous_bidder_phone:
             send_sms(previous_bidder_phone, f"You have been outbid on listing '{listing.title}'.")
 
-    # Save the bid
+    # Save bid
     bid = Bid(
         listing_id=data['listing_id'],
         bidder_id=data['bidder_id'],
@@ -56,7 +56,7 @@ def place_bid():
     )
     bid.save()
 
-    # Notify the lister
+    
     lister_phone = get_user_phone(listing.lister_id)
     if lister_phone:
         send_sms(lister_phone, f"A new bid of ${bid_amount} has been placed on your listing '{listing.title}'.")
@@ -67,6 +67,7 @@ def place_bid():
     "bid": bid.to_dict()
     }), 201
 
+# get each bid's data based on specific listing id
 @bid_bp.route('/<int:listing_id>', methods=['GET'])
 def get_bids(listing_id):
     bids = Bid.get_for_listing(listing_id)

@@ -1,7 +1,7 @@
 from flask import Flask
 from routes.listing_routes import listing_bp
 from routes.bid_routes import bid_bp
-from routes.auth import auth_bp  # Import the auth Blueprint
+from routes.auth import auth_bp  
 from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
 import os
